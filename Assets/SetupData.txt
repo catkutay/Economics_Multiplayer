@@ -1,0 +1,9 @@
+#note no ‘/‘ at end of IP
+
+IP_Address = ztree.teachingforchange.edu.au
+
+IP_Addres = 129.94.151.97/ZTree
+
+experiment_id = 1
+
+host = True
