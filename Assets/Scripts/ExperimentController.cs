@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class ExperimentController : NetworkBehaviour
 {
 	//set in playernetworkcontroller
-
+	bool updating;
 	public int participant_id;
 	public int participant;
 
@@ -242,9 +242,9 @@ public class ExperimentController : NetworkBehaviour
 
 				}
 				//Debug.LogWarning (experimentNetworking.message);
-				if (experimentNetworking.resultCoins > -20){
-					canvasText.text = experimentNetworking.message + " " + experimentNetworking.resultCoins.ToString ();
-				experimentNetworking.resultCoins = -100;
+				if (experimentNetworking.contrib > -20){
+					canvasText.text = experimentNetworking.message + " " + experimentNetworking.contrib.ToString ();
+				experimentNetworking.contrib = -100;
 					update = false;
 				}
 						//FIXME should go to wait, but get message change
@@ -254,16 +254,18 @@ public class ExperimentController : NetworkBehaviour
 				break;
 			case runState.end:
 				//in case get moved to next stage too soon
-				 if (experimentNetworking.returnTotal > 0) {
-					string resultMessage = experimentNetworking.message + " " + experimentNetworking.returnTotal.ToString ();
+				 if (experimentNetworking.total > 0) {
+					string resultMessage = experimentNetworking.message + " Your contribution was:"+experimentNetworking.contrib.ToString ()+"Your payoff: "+experimentNetworking.payoff.ToString ()+"Total return: " + experimentNetworking.total.ToString ();
 					Debug.LogWarning (resultMessage);
 					StartCoroutine (resultShow (resultMessage));
 					//reset to stop
-					experimentNetworking.returnTotal = -100;
+					experimentNetworking.total = -100;
+					coinManager.player.Cmd_Clear();
+					coinManager.player.Rpc_Clear();
 					//experimentNetworking.message = "";
 				}
 					//gameManager.boxCount = -1;
-				participantController.mode = ParticipantController.modes.stand;
+				if(!updating)participantController.mode = ParticipantController.modes.stand;
 
 				break;
 			}
@@ -288,13 +290,15 @@ public class ExperimentController : NetworkBehaviour
 
 	IEnumerator resultShow (string _resultMessage)
 	{
-		//make sure see return message before final result
-
-		yield return StartCoroutine (WaitForSeconds (30f));
+		//make sure see return message before final result and before player stands
+		updating=true;
+		yield return StartCoroutine (WaitForSeconds (20f));
 		//wait before send result
 	
 		canvasText.text = _resultMessage;
-		yield return true;
+		updating=false;
+		yield return updating;
+
 
 	}
 

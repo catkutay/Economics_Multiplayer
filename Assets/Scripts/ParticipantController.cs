@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 public class ParticipantController :NetworkBehaviour
 {
 	//data is inserted from playernetworksetup when it starts
-	bool update=true;
+	bool updating=true;
 	public int participant;
 	public int participant_id;
 	float startHeight = -1.0f;
@@ -170,19 +170,24 @@ public class ParticipantController :NetworkBehaviour
 
 						exp_cont.ikActive = true;
 						//exp_cont.mode = ExperimentController.runState.wait;
-				
-					
+
+				//setup particpant on ZTree server
+				CommonNetwork commonNetwork = GameObject.Find ("NetworkManager").GetComponent<CommonNetwork> ();
+
+				string url = "/experiments/add_participant?participant_id="+commonNetwork.participant_id+"&experiment_id=" + commonNetwork.experiment_id;
+				 StartCoroutine (commonNetwork.AddParticipant (url));
 
 
-					update=true;
+
+					updating=true;
 
 				break;
 			case modes.run:
-				if(update){
+				if(updating){
 					//lookAtEffector.position = box.transform.position;
 					//does nto work, goes strait back to mouse position
 					playerNetwork.FPCharacterCam.transform.LookAt (lookAtEffector.position);
-					update=false;
+					updating=false;
 				}
 				break;
 

@@ -131,6 +131,7 @@ public class PlayerNetworkSetup : NetworkBehaviour
 				participantController.canvasText = canvasText;
 				participantController.coinManager = tokenBox.GetComponent<CoinManager> ();
 				participantController.coinManager.boxCount = boxCount;
+				participantController.participant_id = commonNetwork.participant_id;
 				expController = tokenBox.GetComponent<ExperimentController> ();
 				expController.participantController = participantController;
 				expController.canvasText = canvasText;
@@ -267,6 +268,18 @@ public class PlayerNetworkSetup : NetworkBehaviour
 		exp_network.message = _message;
 
 	}
+	[ClientRpc]
+	public void Rpc_Clear(){
+		tokenBox.GetComponent<CoinManager> ().SetToClear ();
+
+	}
+	[Command]
+	public void Cmd_Clear(){
+		tokenBox.GetComponent<CoinManager> ().SetToClear ();
+
+
+	}
+
 	//caleld form experiment controller to send update messages from ZTree
 	[Command]
 	public void Cmd_broadcast (string _message)

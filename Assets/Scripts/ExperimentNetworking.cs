@@ -12,9 +12,9 @@ public class ExperimentNetworking : NetworkBehaviour
 	public bool urlReturn;
 	[SyncVar] string _message;
 	//store resutls to dispaly on canvas in exp Controller
-	public float resultCoins = -100;
-	public float returnTotal = -100;
-
+	public float contrib = -100;
+	public float total = -100;
+	public float payoff=-100;
 	public CoinManager coinManager;
 
 	//returns from url
@@ -126,7 +126,7 @@ public class ExperimentNetworking : NetworkBehaviour
 		//	Debug.LogWarning (node);
 
 			if (find.Length != 0) {
-
+				//colelect all values
 				returnString = node [find];
 
 				//	Debug.LogWarning (node);
@@ -135,7 +135,7 @@ public class ExperimentNetworking : NetworkBehaviour
 				//mens you cannot pick this up in the state machine
 				//	Debug.LogWarning (experimentController.mode);
 				//	Debug.LogWarning ("Return" + returnString);
-				if (float.TryParse (returnString, out resultCoins)) {
+				if (float.TryParse (returnString, out contrib)) {
 					//get back result from group submissions
 
 
@@ -143,18 +143,23 @@ public class ExperimentNetworking : NetworkBehaviour
 
 						//display returned amount and no effort coins
 					
-						coinManager.currentCoins -= (int)Mathf.Floor (resultCoins);
+						coinManager.currentCoins -= (int)Mathf.Floor (contrib);
 				//		Debug.LogWarning (message);
 				//		Debug.LogWarning (resultCoins);
 						coinManager.result = true;
 					}
-				
-					returnString = node ["Total"];
-
-					if (float.TryParse (returnString, out returnTotal)) {
+					returnString=node["Payoff"];
+					if (float.TryParse (returnString, out payoff)) {
 
 						//		Debug.LogWarning (message);
-						//		Debug.LogWarning (returnTotal);
+
+					}
+					returnString = node ["Return"];
+
+					if (float.TryParse (returnString, out total)) {
+
+						//		Debug.LogWarning (message);
+
 					}
 
 
