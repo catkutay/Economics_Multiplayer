@@ -14,7 +14,7 @@ public class ExperimentNetworking : NetworkBehaviour
 	//store resutls to dispaly on canvas in exp Controller
 	public float contrib = -100;
 	public float total = -100;
-	public float payoff=-100;
+	public float payoff = -100;
 	public CoinManager coinManager;
 
 	//returns from url
@@ -37,7 +37,7 @@ public class ExperimentNetworking : NetworkBehaviour
 	{
 		
 		//message changed from expereiment controller request to server
-		if (message != _message && !message.Equals("")) {
+		if (message != _message && !message.Equals ("")) {
 			//send update of result Message too for when it comes in
 
 			coinManager.player.Cmd_broadcast (message);
@@ -51,7 +51,7 @@ public class ExperimentNetworking : NetworkBehaviour
 	{
 		urlReturn = false;
 		//Debug.LogWarning (_url);
-		yield return StartCoroutine (WaitForSeconds (.5f));
+		yield return StartCoroutine (WaitForSeconds (1.0f));
 		WWW www = new WWW (_url);
 
 		yield return StartCoroutine (WaitForRequest (www));
@@ -105,7 +105,7 @@ public class ExperimentNetworking : NetworkBehaviour
 		yield break;
 	}
 
-	public IEnumerator FetchResults (string _url, string find, string findInt, ExperimentController.runState _mode)
+	public IEnumerator FetchResults (string _url)
 	{
 		urlReturn = false;
 		//Debug.LogWarning (_url);
@@ -122,63 +122,58 @@ public class ExperimentNetworking : NetworkBehaviour
 
 		if (node != null) {
 			
-		//	Debug.LogWarning ("result");
-		//	Debug.LogWarning (node);
+			//	Debug.LogWarning ("result");
+			//Debug.LogWarning (node);
 
-			if (find.Length != 0) {
-				//colelect all values
-				returnString = node [find];
 
-				//	Debug.LogWarning (node);
+			//colelect all values
+			returnString = node ["Contribution"];
+
+			//	Debug.LogWarning (node);
 		
-				//hack to get results into message- the time delay
-				//mens you cannot pick this up in the state machine
-				//	Debug.LogWarning (experimentController.mode);
-				//	Debug.LogWarning ("Return" + returnString);
-				if (float.TryParse (returnString, out contrib)) {
-					//get back result from group submissions
+			//hack to get results into message- the time delay
+			//means you cannot pick this up in the state machine
+
+			//	Debug.LogWarning ("Return" + returnString);
+			if (float.TryParse (returnString, out contrib)) {
+				//get back result from group submissions
 
 
-					if (!coinManager.result) {
+				if (!coinManager.result) {
 
-						//display returned amount and no effort coins
+					//display returned amount and no effort coins
 					
-						coinManager.currentCoins -= (int)Mathf.Floor (contrib);
-				//		Debug.LogWarning (message);
-				//		Debug.LogWarning (resultCoins);
-						coinManager.result = true;
-					}
-					returnString=node["Payoff"];
-					if (float.TryParse (returnString, out payoff)) {
+					//coinManager.currentCoins -= (int)Mathf.Floor (contrib);
 
-						//		Debug.LogWarning (message);
+					//		Debug.LogWarning (resultCoins);
 
-					}
-					returnString = node ["Return"];
-
-					if (float.TryParse (returnString, out total)) {
-
-						//		Debug.LogWarning (message);
-
-					}
-
-
-					urlReturn = true;
-					yield return true;
-
-					//message for localplayer/tokenbox only
-				}
-				urlReturn = true;
-				yield return true;
-
-			
-			} else {
-
-				if (Int32.TryParse (node [findInt], out returnInt)) {
-					urlReturn = true;
-					yield return true;
 				}
 			}
+			returnString = node ["Payoff"];
+			if (float.TryParse (returnString, out payoff)) {
+
+				//		Debug.LogWarning (message);
+
+			}
+			returnString = node ["Return"];
+
+			if (float.TryParse (returnString, out total)) {
+				//result in effort coins is reverse of the total
+				coinManager.currentCoins=coinManager.maxCoins-(int)Mathf.Floor (total);
+				coinManager.result = true;
+				coinManager.player.Cmd_Update_Coins(coinManager.boxCount, coinManager.currentCoins, true);
+
+			}
+
+
+			urlReturn = true;
+			yield return true;
+
+			//message for localplayer/tokenbox only
+
+
+			
+
 		} else {
 			//Debug.LogWarning ("No node on api read for " + find + " or " + findInt);
 			//canvas.message = "Errer in stages for experiment: " + node;

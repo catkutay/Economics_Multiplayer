@@ -8,15 +8,16 @@ public class SetupServer : NetworkBehaviour
 {
 	//gets data from ZTree server for Host_IP, Port, max_participants and participant number
 	//The latter is used to setup player prefab, so rest of code ahs to check this has been done
-	bool update = true;
+
 	string find;
 	string findInt;
 	bool connected = false;
 
 	public string Host_IP;
-	int Port = 11000;
-	bool server = true;
+	 int Port=11000;
 
+	bool startup=false;
+	bool server=true;
 
 	//is this the first running system - otherwise do not need to setup server
 
@@ -27,13 +28,15 @@ public class SetupServer : NetworkBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		update = true;
+		
 		//get components to address 
 		networkManager = GetComponent<NetworkManager> ();
 		DontDestroyOnLoad (transform.gameObject);
 
 		commonNetwork = GetComponent<CommonNetwork> ();
 		Host_IP = null;
+		startup=true;
+
 	
 	}
 
@@ -49,38 +52,39 @@ public class SetupServer : NetworkBehaviour
 		
 			//reset values on server to set this machine as hosting, update round_id
 			//option available only if set in textfile as host
-			if (commonNetwork.isHost && update) {
-				//	if (GUILayout.Button ("Reset ZTree server for hosting from this machine")) {
-
-				find = "Host_IP";
-				//	Debug.Log (Network.player.ipAddress);
-				string url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Host_IP=" + Network.player.ipAddress;
-				StartCoroutine (commonNetwork.FetchHost_IP (url, find, ""));
-				findInt = "Port";
-				url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Port=" + Port.ToString ();
-				StartCoroutine (commonNetwork.FetchHost_IP (url, "", findInt));
-				//reset participants
-				url = "/experiments/participant?experiment_id=" + commonNetwork.experiment_id + "&participant=-1";
-				StartCoroutine (commonNetwork.FetchHost_IP (url, "", ""));
-				find = "Host_IP";
-				url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Host_IP";
-				StartCoroutine (commonNetwork.FetchHost_IP (url, find, ""));
-				//repeat?
-				find = "";
-				url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Port";
-				StartCoroutine (commonNetwork.FetchHost_IP (url, "", ""));
-				//reset expereiment round - also remvoe from ztree FIXME
-				findInt = "round_id";
-				url = "/experiments/next_round?experiment_id=" + commonNetwork.experiment_id;
-				StartCoroutine (commonNetwork.FetchHost_IP (url, "", findInt));
-				//Debug.LogWarning("Setup Ztree");
-				update = false;
-			}
-
-			//GUILayout.Label ("Network server is not running.");
-
-			//textfile sets up server to avoid oculus need to select as server
 			if (commonNetwork.isHost) {
+				if (startup) {
+					
+					find = "Host_IP";
+					//	Debug.Log (Network.player.ipAddress);
+					string url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Host_IP=" + Network.player.ipAddress;
+					StartCoroutine (commonNetwork.FetchHost_IP (url, find, ""));
+					findInt = "Port";
+					url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Port="+Port.ToString();
+					StartCoroutine (commonNetwork.FetchHost_IP (url, "", findInt));
+					//reset participants
+					url = "/experiments/participant?experiment_id=" + commonNetwork.experiment_id + "&participant=-1";
+					StartCoroutine (commonNetwork.FetchHost_IP (url, "", ""));
+					find = "Host_IP";
+					url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Host_IP";
+					StartCoroutine (commonNetwork.FetchHost_IP (url, find, ""));
+					//repeat?
+					find = "";
+					url = "/experiments/setup?experiment_id=" + commonNetwork.experiment_id + "&Port";
+					StartCoroutine (commonNetwork.FetchHost_IP (url, "", ""));
+					//reset expereiment round - also remvoe from ztree FIXME
+					findInt = "round_id";
+					url = "/experiments/next_round?experiment_id=" + commonNetwork.experiment_id;
+					StartCoroutine (commonNetwork.FetchHost_IP (url, "", findInt));
+					//Debug.LogWarning("Setup Ztree");
+					//do once
+					startup=false;
+				}
+
+				//GUILayout.Label ("Network server is not running.");
+
+				//textfile sets up server to avoid oculus need to select as server
+
 				server = GUILayout.Toggle (server, "Run as host");
 				//find host IP and max_participant number
 			
@@ -97,7 +101,7 @@ public class SetupServer : NetworkBehaviour
 				StartCoroutine (setupLink ());
 			}
 		
-			showServerInformation ();
+		
 		}
 	}
 
@@ -132,14 +136,12 @@ public class SetupServer : NetworkBehaviour
 			Host_IP = commonNetwork.Host_IP;
 			Port = commonNetwork.Port;
 		} 
-
-
 		if (!connected) {
-			
 			connected = true;
 			//now can set up
 			//Debug.Log(Host_IP);
-
+			networkManager.networkAddress = Host_IP;
+			networkManager.networkPort = Port;
 			//Debug.LogWarning(networkManager.networkAddress+":"+networkManager.networkPort);
 			//can start after set up
 			find = "participant";
@@ -151,22 +153,20 @@ public class SetupServer : NetworkBehaviour
 				//uncomment for TESTING without experimenter
 				//url = "/experiments/participant?participant=1&experiment_id=" + commonNetwork.experiment_id;
 
-
+				yield return StartCoroutine (commonNetwork.FetchParticipant (url));
+				networkManager.StartHost ();
 				//Debug.LogWarning(commonNetwork.participant);
 				//Debug.Log ("server");
 
 			} else {
 				//do the participatn setup when particpant sitting in participatn controller
-				//string url = "/experiments/participant?participant=1&experiment_id=" + commonNetwork.experiment_id;
-				//yield return StartCoroutine (commonNetwork.FetchParticipant (url));
-
 				url = "/experiments/participant?participant=1&experiment_id=" + commonNetwork.experiment_id;
+				yield return StartCoroutine (commonNetwork.FetchParticipant (url));
 
-			
+				networkManager.StartClient ();
 
 			}
 
-			yield return StartCoroutine (commonNetwork.FetchParticipant (url,Host_IP, Port,server));
 		
 
 

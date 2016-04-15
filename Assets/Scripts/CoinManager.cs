@@ -10,7 +10,7 @@ public class CoinManager : NetworkBehaviour
 	public GameObject[] effort;
 	public GameObject[] resource;
 	bool isPressed = false;
-
+	public  bool clearBox=false;
 	//should be updated onj server and client;
 	[SyncVar (hook = "updateCoins")] public int currentCoins;
 
@@ -26,6 +26,7 @@ public class CoinManager : NetworkBehaviour
 	void Start ()
 	{
 		//Debug.Log ("Start");
+		clearBox=false;
 		for (int i = maxCoins; i >= 0; i--) {
 			effort [i].SetActive (false);
 			resource [i].SetActive (true);
@@ -47,6 +48,8 @@ public class CoinManager : NetworkBehaviour
 
 	
 		}
+		//update clear material
+		if (clearBox )SetToClear();
 	}
 
 	void HandlePlayerInput ()
@@ -145,8 +148,9 @@ public class CoinManager : NetworkBehaviour
 
 	public void SetToClear ()
 	{
-		if (GetComponent<MeshRenderer> ().material != clear)
+		if ( GetComponent<MeshRenderer> ().material != clear){
 			GetComponent<MeshRenderer> ().material = clear;
+		}
 	}
 
 	void OnGUI ()

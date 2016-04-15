@@ -168,7 +168,8 @@ public class PlayerNetworkSetup : NetworkBehaviour
 
 
 				tokenBox.GetComponent<CoinManager> ()._isLocalPlayer = true;
-				tokenBox.GetComponent<CoinManager> ().SetToClear ();
+				tokenBox.GetComponent<CoinManager> ().SetToClear();
+				//tokenBox.GetComponent<CoinManager> ().SetToClear ();
 				Cmd_update_round_id (gameManager.round_id);
 
 
@@ -247,6 +248,7 @@ public class PlayerNetworkSetup : NetworkBehaviour
 		gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().result = _result;
 		//use syncvar
 		//Rpc_Update_Coins (_boxCount, _currentCoins, _result);
+
 	}
 
 	[ClientRpc]
@@ -270,13 +272,19 @@ public class PlayerNetworkSetup : NetworkBehaviour
 	}
 	[ClientRpc]
 	public void Rpc_Clear(){
-		tokenBox.GetComponent<CoinManager> ().SetToClear ();
+		for (int i =0; i<gameManager.tokenBoxes.Length;i++){
+			gameManager.tokenBoxes[i].GetComponent<CoinManager> ().SetToClear();
+		}
 
 	}
 	[Command]
+	//clear on server at end of game
 	public void Cmd_Clear(){
-		tokenBox.GetComponent<CoinManager> ().SetToClear ();
-
+		
+			for (int i =0; i<gameManager.tokenBoxes.Length;i++){
+			gameManager.tokenBoxes[i].GetComponent<CoinManager> ().SetToClear();
+		}
+		Rpc_Clear();
 
 	}
 

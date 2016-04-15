@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 public class ParticipantController :NetworkBehaviour
 {
 	//data is inserted from playernetworksetup when it starts
-	bool updating=true;
+	bool updating = true;
 	public int participant;
 	public int participant_id;
 	float startHeight = -1.0f;
@@ -122,7 +122,7 @@ public class ParticipantController :NetworkBehaviour
 						animator.SetFloat ("Speed", 0);
 					} else {
 						
-					diff = 0.4f;
+						diff = 0.4f;
 
 						target = sitTargetV;
 						walkTarget = null;
@@ -146,7 +146,7 @@ public class ParticipantController :NetworkBehaviour
 				transform.rotation = Quaternion.Slerp (transform.rotation, transformRotation, Time.time * .5f);
 				if (transform.rotation.eulerAngles.y - transformRotation.eulerAngles.y < .1f) {
 					//go to sitting if finished sit motion
-					if (animator.GetCurrentAnimatorStateInfo (0).IsName ("sitting_idle")){
+					if (animator.GetCurrentAnimatorStateInfo (0).IsName ("sitting_idle")) {
 						mode = modes.sitting;
 
 					}
@@ -160,34 +160,34 @@ public class ParticipantController :NetworkBehaviour
 				//controler sits over centre of seat
 			
 
-					if (coinManager == null) {
-						coinManager = box.GetComponent<CoinManager> ();
-					}
+				if (coinManager == null) {
+					coinManager = box.GetComponent<CoinManager> ();
+				}
 
 					//start experiment when sitting
-						mode = modes.run;
-						exp_cont = coinManager.GetComponent<ExperimentController> ();
+				mode = modes.run;
+				exp_cont = coinManager.GetComponent<ExperimentController> ();
 
-						exp_cont.ikActive = true;
+				exp_cont.ikActive = true;
 						//exp_cont.mode = ExperimentController.runState.wait;
 
 				//setup particpant on ZTree server
 				CommonNetwork commonNetwork = GameObject.Find ("NetworkManager").GetComponent<CommonNetwork> ();
 
-				string url = "/experiments/add_participant?participant_id="+commonNetwork.participant_id+"&experiment_id=" + commonNetwork.experiment_id;
-				 StartCoroutine (commonNetwork.AddParticipant (url));
+				string url = "/experiments/add_participant?participant_id=" + commonNetwork.participant_id + "&experiment_id=" + commonNetwork.experiment_id;
+				StartCoroutine (commonNetwork.AddParticipant (url));
 
 
 
-					updating=true;
+				updating = true;
 
 				break;
 			case modes.run:
-				if(updating){
+				if (updating) {
 					//lookAtEffector.position = box.transform.position;
 					//does nto work, goes strait back to mouse position
 					playerNetwork.FPCharacterCam.transform.LookAt (lookAtEffector.position);
-					updating=false;
+					updating = false;
 				}
 				break;
 

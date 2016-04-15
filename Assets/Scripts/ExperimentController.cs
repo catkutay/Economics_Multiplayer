@@ -238,14 +238,14 @@ public class ExperimentController : NetworkBehaviour
 					//get result for previous stage for each participant
 					url = textFileReader.IP_Address + "/experiments/results?experiment_id=" + textFileReader.experiment_id + "&stage_number=" + (resultStage) + "&round_id=" + round_id.ToString () + "&name=Result&participant_id=" + participant_id;
 					
-					StartCoroutine (experimentNetworking.FetchResults (url, "Results", "", mode));
-
-				}
-				//Debug.LogWarning (experimentNetworking.message);
-				if (experimentNetworking.contrib > -20){
-					canvasText.text = experimentNetworking.message + " " + experimentNetworking.contrib.ToString ();
-				experimentNetworking.contrib = -100;
+					StartCoroutine (experimentNetworking.FetchResults (url));
 					update = false;
+				}
+				//Restuls have returned
+				if (experimentNetworking.payoff >-20){
+					canvasText.text = experimentNetworking.message + " " + experimentNetworking.payoff.ToString ();
+				
+
 				}
 						//FIXME should go to wait, but get message change
 						//mode = runState.wait;
@@ -253,18 +253,21 @@ public class ExperimentController : NetworkBehaviour
 
 				break;
 			case runState.end:
+				
 				//in case get moved to next stage too soon
-				 if (experimentNetworking.total > 0) {
-					string resultMessage = experimentNetworking.message + " Your contribution was:"+experimentNetworking.contrib.ToString ()+"Your payoff: "+experimentNetworking.payoff.ToString ()+"Total return: " + experimentNetworking.total.ToString ();
-					Debug.LogWarning (resultMessage);
+				 if (experimentNetworking.total >-20) {
+					string resultMessage = experimentNetworking.message + "\nYour contribution: "+experimentNetworking.contrib.ToString ()+"\nYour payoff: "+experimentNetworking.payoff.ToString ()+"\nTotal return: " + experimentNetworking.total.ToString ();
+
 					StartCoroutine (resultShow (resultMessage));
 					//reset to stop
-					experimentNetworking.total = -100;
-					coinManager.player.Cmd_Clear();
-					coinManager.player.Rpc_Clear();
+
+					if(isHost)coinManager.player.Cmd_Clear();
+					//coinManager.player.Rpc_Clear();
 					//experimentNetworking.message = "";
 				}
 					//gameManager.boxCount = -1;
+
+				//stand when displayed message
 				if(!updating)participantController.mode = ParticipantController.modes.stand;
 
 				break;
@@ -292,7 +295,7 @@ public class ExperimentController : NetworkBehaviour
 	{
 		//make sure see return message before final result and before player stands
 		updating=true;
-		yield return StartCoroutine (WaitForSeconds (20f));
+		yield return StartCoroutine (WaitForSeconds (5f));
 		//wait before send result
 	
 		canvasText.text = _resultMessage;
@@ -330,6 +333,7 @@ public class ExperimentController : NetworkBehaviour
 					
 
 					mode = runState.ask;
+					//update=true;
 
 				} else if (experimentNetworking.returnString == "Response") {
 					

@@ -6,4 +6,4 @@ IP_Addres = 129.94.151.97/ZTree
 
 experiment_id = 1
 
-host = False
+host = True

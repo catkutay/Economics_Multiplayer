@@ -18,7 +18,7 @@ public class CommonNetwork : NetworkBehaviour {
 	[SyncVar]public int experiment_id;
 
 	GameManager gameManager;
-	NetworkManager networkManager;
+
 	//get from server
 	public int max_participants;
 	public int participant = 0;
@@ -36,7 +36,7 @@ public class CommonNetwork : NetworkBehaviour {
 		isHost=false;
 		textFileReader = GetComponent<TextFileReader> ();
 		gameManager = GetComponent<GameManager> ();
-		networkManager=GetComponent<NetworkManager>();
+
 
 	}
 	void Update ()
@@ -67,13 +67,11 @@ public class CommonNetwork : NetworkBehaviour {
 		yield return StartCoroutine (WaitForRequest (www));
 	}
 
-	public IEnumerator FetchParticipant (string url,string Host_IP, int Port,  bool server)
+	public IEnumerator FetchParticipant (string url)
 	{
 		//Debug.LogWarning(url);
 		//yield return StartCoroutine (WaitForSeconds (.1f));
 		//simple function for participant call only
-		networkManager.networkAddress = Host_IP;
-		networkManager.networkPort = Port;
 		WWW www = new WWW (IP_Address+url);
 
 		yield return StartCoroutine (WaitForRequest (www));
@@ -94,12 +92,8 @@ public class CommonNetwork : NetworkBehaviour {
 
 			} else
 				yield return false;
-			Debug.Log(Host_IP);
 
 
-			if (server)networkManager.StartHost ();
-			else networkManager.StartClient ();
-			Debug.Log("started");
 		} else {
 
 			Debug.Log ("No Node Network Setup for new participant");
@@ -112,7 +106,7 @@ public class CommonNetwork : NetworkBehaviour {
 
 	public IEnumerator FetchHost_IP (string url, string find, string findInt)
 	{
-	//Debug.LogWarning (url);
+		//Debug.LogWarning (url);
 		//get IP and Port numbers - slowly
 		yield return StartCoroutine (WaitForSeconds (.05f));
 
