@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class ExperimentController : NetworkBehaviour
 {
 	//set in playernetworkcontroller
-	bool updating;
+	bool updated;
 	public int participant_id;
 	public int participant;
 
@@ -242,7 +242,7 @@ public class ExperimentController : NetworkBehaviour
 					update = false;
 				}
 				//Restuls have returned
-				if (experimentNetworking.payoff >-20){
+				if (experimentNetworking.payoff >=-40){
 					canvasText.text = experimentNetworking.message + " " + experimentNetworking.payoff.ToString ();
 				
 
@@ -255,7 +255,7 @@ public class ExperimentController : NetworkBehaviour
 			case runState.end:
 				
 				//in case get moved to next stage too soon
-				 if (experimentNetworking.total >-20) {
+				 if (experimentNetworking.total >=-40) {
 					string resultMessage = experimentNetworking.message + "\nYour contribution: "+experimentNetworking.contrib.ToString ()+"\nYour payoff: "+experimentNetworking.payoff.ToString ()+"\nTotal return: " + experimentNetworking.total.ToString ();
 
 					StartCoroutine (resultShow (resultMessage));
@@ -268,7 +268,10 @@ public class ExperimentController : NetworkBehaviour
 					//gameManager.boxCount = -1;
 
 				//stand when displayed message
-				if(!updating)participantController.mode = ParticipantController.modes.stand;
+				if(updated){
+					participantController.mode = ParticipantController.modes.stand;
+					coinManager.player.simpleMouseLook.mouseLookMove=true;
+				}
 
 				break;
 			}
@@ -294,13 +297,13 @@ public class ExperimentController : NetworkBehaviour
 	IEnumerator resultShow (string _resultMessage)
 	{
 		//make sure see return message before final result and before player stands
-		updating=true;
+		updated=false;
 		yield return StartCoroutine (WaitForSeconds (5f));
 		//wait before send result
 	
 		canvasText.text = _resultMessage;
-		updating=false;
-		yield return updating;
+		updated=true;
+		yield return updated;
 
 
 	}

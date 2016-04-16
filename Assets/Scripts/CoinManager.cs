@@ -59,7 +59,7 @@ public class CoinManager : NetworkBehaviour
 		//set by callback in Playernetworkcontroller
 
 		//Debug.Log ("Is Local");
-		if (Input.GetKeyUp (KeyCode.W) & currentCoinsIdinArray < maxCoins) {
+		if (Input.GetKeyUp (KeyCode.W) && currentCoinsIdinArray < maxCoins) {
 				
 		
 

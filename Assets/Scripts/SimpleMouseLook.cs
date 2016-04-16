@@ -16,9 +16,9 @@ public class SimpleMouseLook : MonoBehaviour
 	// to have no constraints on an axis, set the rotationRange to 360 or greater.
 
 	//following not public as set here
-	 Vector2 rotationRange = new Vector3 (100, 100);
-	 float rotationSpeed = 10;
-	 float dampingTime = 0.2f;
+	Vector2 rotationRange = new Vector3 (100, 100);
+	float rotationSpeed = 10;
+	float dampingTime = 0.2f;
 
 	bool relative = true;
 
@@ -33,6 +33,8 @@ public class SimpleMouseLook : MonoBehaviour
 	public float hitdist;
 	//set in PlayerNewtorkController
 	public bool _isLocalPlayer;
+	Animator animator;
+	public bool mouseLookMove=false;
 
 	void Start ()
 	{
@@ -44,8 +46,36 @@ public class SimpleMouseLook : MonoBehaviour
 		//retain distance To Character
 		dist = (transform.position - hip_pivot.position / 10);
 		hitdist = dist.magnitude;
+		animator = GetComponentInParent<Animator> ();
 	}
 
+	void Update ()
+	{
+		if (_isLocalPlayer && mouseLookMove) {
+			
+			if (Input.GetKeyUp (KeyCode.W)) {
+				Debug.Log(animator);
+				animator.SetFloat ("Speed", 1);
+			
+
+			}
+
+			if (Input.GetKeyUp (KeyCode.S)) {
+				animator.SetFloat ("Speed", -1);
+
+
+			}
+			if (Input.GetAxis ("D-PadX") == 1.0f | Input.GetAxis ("D-PadX") == -1.0f) {
+
+				animator.SetFloat ("Speed", Input.GetAxis ("D-PadX"));
+
+
+			}
+		
+
+		
+		}
+	}
 
 	void LateUpdate ()
 	{
@@ -103,12 +133,16 @@ public class SimpleMouseLook : MonoBehaviour
 		
 			//Vector3 lookPos = angle * dist;
 		
-			cam.transform.localRotation = angle;
+
 			// update the actual gameobject's rotation
-
-			//move trasnform to camera view
+			cam.transform.localRotation = angle;
+			//move transform to camera view
 			transform.position = transform.position + cam.transform.forward * hitdist * Time.deltaTime;
-
+	
+			if (mouseLookMove){
+				angle.z=0;
+				animator.transform.localRotation=angle;
+			}
 		}
 	}
 }

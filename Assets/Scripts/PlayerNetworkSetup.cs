@@ -17,7 +17,7 @@ public class PlayerNetworkSetup : NetworkBehaviour
 	float startHeight = -1.2f;
 	CommonNetwork commonNetwork;
 	ParticipantController participantController;
-
+	public SimpleMouseLook  simpleMouseLook;
 	public Transform spawnPoint;
 	string returnParameter;
 	public TextFileReader textFileReader;
@@ -175,7 +175,7 @@ public class PlayerNetworkSetup : NetworkBehaviour
 
 			}
 		}
-		SimpleMouseLook simpleMouseLook = gameObject.GetComponentInChildren<SimpleMouseLook> ();
+		simpleMouseLook = gameObject.GetComponentInChildren<SimpleMouseLook> ();
 		if (simpleMouseLook != null) {
 			simpleMouseLook.enabled = true;
 			simpleMouseLook._isLocalPlayer = true;

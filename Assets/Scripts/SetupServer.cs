@@ -151,7 +151,7 @@ public class SetupServer : NetworkBehaviour
 		
 				url = "/experiments/participant?participant=0&experiment_id=" + commonNetwork.experiment_id;
 				//uncomment for TESTING without experimenter
-				url = "/experiments/participant?participant=1&experiment_id=" + commonNetwork.experiment_id;
+				//url = "/experiments/participant?participant=1&experiment_id=" + commonNetwork.experiment_id;
 
 				yield return StartCoroutine (commonNetwork.FetchParticipant (url));
 				networkManager.StartHost ();
