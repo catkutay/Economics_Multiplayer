@@ -12,7 +12,7 @@ public class CoinManager : NetworkBehaviour
 	bool isPressed = false;
 	public  bool clearBox=false;
 	//should be updated onj server and client;
-	[SyncVar (hook = "updateCoins")] public int currentCoins;
+	[SyncVar (hook = "updateCoins")] public int currentCoinsIdinArray=-1;
 
 	public Material clear;
 	public bool _isLocalPlayer = false;
@@ -27,11 +27,12 @@ public class CoinManager : NetworkBehaviour
 	{
 		//Debug.Log ("Start");
 		clearBox=false;
+		//clear effort coins
 		for (int i = maxCoins; i >= 0; i--) {
 			effort [i].SetActive (false);
 			resource [i].SetActive (true);
 		}
-		currentCoins = 0;
+		currentCoinsIdinArray = -1;
 		gameManager = GameObject.Find ("NetworkManager").GetComponent<GameManager> ();
 			boxCount =gameManager.boxCount;
 	}
@@ -58,19 +59,18 @@ public class CoinManager : NetworkBehaviour
 		//set by callback in Playernetworkcontroller
 
 		//Debug.Log ("Is Local");
-		if (Input.GetKeyUp (KeyCode.W)) {
+		if (Input.GetKeyUp (KeyCode.W) & currentCoinsIdinArray < maxCoins) {
 				
-			if (currentCoins >= 0 && currentCoins <= maxCoins) {
-					
+		
 
-				currentCoins++;
+				currentCoinsIdinArray++;
 				//Debug.Log (currentCoins);
-			}
+
 
 		}
 
-		if (Input.GetKeyUp (KeyCode.S) && currentCoins > 0) {
-			currentCoins--;
+		if (Input.GetKeyUp (KeyCode.S) && currentCoinsIdinArray >= 0) {
+			currentCoinsIdinArray--;
 
 			
 
@@ -84,16 +84,16 @@ public class CoinManager : NetworkBehaviour
 		if (Input.GetAxis ("D-PadY") > 0.0f && isPressed == false) {
 				
 
-			if (currentCoins <= maxCoins) {
-				currentCoins++;
-				//Debug.Log (currentCoins);
+			if (currentCoinsIdinArray <= maxCoins) {
+				currentCoinsIdinArray++;
+		
 			}
 
 			isPressed = true;
 		}
 
-		if (Input.GetAxis ("D-PadY") < 0.0f && isPressed == false && currentCoins > 1) {
-			currentCoins--;
+		if (Input.GetAxis ("D-PadY") < 0.0f && isPressed == false && currentCoinsIdinArray > 1) {
+			currentCoinsIdinArray--;
 
 			
 			isPressed = true;
@@ -111,28 +111,24 @@ public class CoinManager : NetworkBehaviour
 			}
 			//send to server
 			
-		if(_isLocalPlayer)player.Cmd_Update_Coins(boxCount, currentCoins, result);
+		if(_isLocalPlayer)player.Cmd_Update_Coins(boxCount, currentCoinsIdinArray, result);
 	
 
 	}
-	//enact server update on coins
-	//void FixedUpdate(){
-//		if(_isLocalPlayer)
-//		updateCoins (currentCoins);
-///	}
 	void updateCoins(int _currentCoins){
 		{
-			currentCoins = _currentCoins;
+
+			currentCoinsIdinArray = _currentCoins;
 			if (_isLocalPlayer) {
 				
-				if (currentCoins >= 0 & currentCoins<=maxCoins) {
-					for (int i = maxCoins; i >= currentCoins; i--) {
+				if (currentCoinsIdinArray >= -1 & currentCoinsIdinArray<=maxCoins) {
+					for (int i = maxCoins; i > currentCoinsIdinArray; i--) {
 			
 						effort [i].SetActive (false);
 						resource [i].SetActive (true);
 					}
 
-					for (int i = 0; i < currentCoins; i++) {
+					for (int i = 0; i <= currentCoinsIdinArray; i++) {
 						if (result) {
 							effort [i].SetActive (false);
 						} else

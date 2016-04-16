@@ -159,9 +159,9 @@ public class ExperimentNetworking : NetworkBehaviour
 
 			if (float.TryParse (returnString, out total)) {
 				//result in effort coins is reverse of the total
-				coinManager.currentCoins=coinManager.maxCoins-(int)Mathf.Floor (total);
+				coinManager.currentCoinsIdinArray=coinManager.maxCoins-(int)Mathf.Floor (total);
 				coinManager.result = true;
-				coinManager.player.Cmd_Update_Coins(coinManager.boxCount, coinManager.currentCoins, true);
+				coinManager.player.Cmd_Update_Coins(coinManager.boxCount, coinManager.currentCoinsIdinArray, true);
 
 			}
 

@@ -206,7 +206,7 @@ public class ExperimentController : NetworkBehaviour
 					leftHandEffector.transform.position = target;
 					button.GetComponent<ClearButton> ()._isLocalPlayer = true;
 					//send coin number	
-					canvasText.text = experimentNetworking.message + " You have selected " + coinManager.currentCoins + " coins";
+					canvasText.text = experimentNetworking.message + " You have selected " + (coinManager.currentCoinsIdinArray +1) + " coins";
 					if (coinManager.isFinished & _isLocalPlayer) {
 						round_id = gameManager.round_id;
 						//cannot enter anymore
@@ -217,7 +217,7 @@ public class ExperimentController : NetworkBehaviour
 						canvasText.text = "Wait for others to finish";
 
 						//enter result
-						url = textFileReader.IP_Address + "/experiments/results?experiment_id=" + textFileReader.experiment_id + "&stage_number=" + stage_number + "&participant_id=" + participant_id + "&round_id=" + round_id.ToString () + "&name=CoinEffort&value=" + coinManager.currentCoins;
+						url = textFileReader.IP_Address + "/experiments/results?experiment_id=" + textFileReader.experiment_id + "&stage_number=" + stage_number + "&participant_id=" + participant_id + "&round_id=" + round_id.ToString () + "&name=CoinEffort&value=" + coinManager.currentCoinsIdinArray;
 						StartCoroutine (experimentNetworking.FetchStage (url, "", "", mode));
 						//not playing anymore
 						ikActive = false;

@@ -244,7 +244,7 @@ public class PlayerNetworkSetup : NetworkBehaviour
 	public void Cmd_Update_Coins (int _boxCount, int _currentCoins, bool _result)
 	{
 
-		gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().currentCoins = _currentCoins;
+		gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().currentCoinsIdinArray = _currentCoins;
 		gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().result = _result;
 		//use syncvar
 		//Rpc_Update_Coins (_boxCount, _currentCoins, _result);
@@ -256,7 +256,7 @@ public class PlayerNetworkSetup : NetworkBehaviour
 	{
 
 		if (gameManager) {
-			gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().currentCoins = _currentCoins;
+			gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().currentCoinsIdinArray = _currentCoins;
 			gameManager.tokenBoxes [_boxCount].GetComponent<CoinManager> ().result = _result;
 		}
 	}
